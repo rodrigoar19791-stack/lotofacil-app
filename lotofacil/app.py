@@ -31,8 +31,57 @@ st.markdown("""
         border: 1px solid #c8e6c9;
         margin-bottom: 8px;
     }
+    .btn-compra {
+        display: inline-block;
+        background-color: #2e7d32;
+        color: white !important;
+        padding: 12px 24px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
     </style>
 """, unsafe_allow_html=True)
+
+# ==============================================================================
+# SISTEMA DE SEGURANÇA E TELA DE LOGIN (BARREIRA DE MONETIZAÇÃO)
+# ==============================================================================
+SENHA_CORRETA = "LOTO2026"
+
+if 'autenticado' not in st.session_state:
+    st.session_state.autenticado = False
+
+if not st.session_state.autenticado:
+    st.markdown("### 🔒 Acesso Restrito — Área Exclusiva de Assinantes")
+    st.write("O **LotoAnálise Pro** é um otimizador estatístico avançado de alta precisão.")
+    
+    col_login_1, col_login_2 = st.columns(2)
+    
+    with col_login_1:
+        st.markdown("#### Já é um Membro?")
+        senha_digitada = st.text_input("Digite sua senha de acesso ativa:", type="password")
+        if st.button("Destravar Otimizador", type="primary"):
+            if senha_digitada == SENHA_CORRETA:
+                st.session_state.autenticado = True
+                st.success("Acesso autorizado! Carregando o sistema...")
+                st.rerun()
+            else:
+                st.error("Senha incorreta. Verifique o código enviado no seu e-mail de compra.")
+                
+    with col_login_2:
+        st.markdown("#### Não tem uma senha?")
+        st.write("Ative seu acesso instantâneo via PIX para liberar o gerador inteligente agora mesmo por um custo simbólico:")
+        
+        # ⚠️ SUBSTITUA O LINK ABAIXO PELO SEU LINK DE CHECKOUT COPIADO DA KIWIFY ⚠️
+        link_kiwify = "https://kiwify.com.br" 
+        
+        st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">⚡ Quero Acesso Anual por R$ 49,90</a>', unsafe_allow_html=True)
+        st.caption("Garantia total de 7 dias protegida por lei.")
+        
+    st.stop()
 
 # ==============================================================================
 # BASE DE DADOS MATEMÁTICA (REGRAS ESTÁTICAS)
@@ -46,21 +95,17 @@ MOLDURA = {1, 2, 3, 4, 5, 6, 10, 11, 15, 16, 20, 21, 22, 23, 24, 25}
 def validar_jogo(combinacao, ultimo_sorteio, qtde_repetidos):
     jogo = set(combinacao)
     
-    # Filtro 1: Repetição do ciclo anterior
     if len(jogo.intersection(ultimo_sorteio)) != qtde_repetidos:
         return False
         
-    # Filtro 2: Proporção de Pares e Ímpares (Aceita apenas 7 ou 8 pares)
     pares = len([n for n in jogo if n % 2 == 0])
     if pares not in (7, 8):
         return False
         
-    # Filtro 3: Quantidade de Primos (Aceita apenas 5 ou 6 primos)
     primos = len(jogo.intersection(NUMEROS_PRIMOS))
     if primos not in (5, 6):
         return False
         
-    # Filtro 4: Quantidade na Moldura (Aceita apenas 9 ou 10 na borda)
     moldura = len(jogo.intersection(MOLDURA))
     if moldura not in (9, 10):
         return False
@@ -70,12 +115,9 @@ def validar_jogo(combinacao, ultimo_sorteio, qtde_repetidos):
 def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
     todos_numeros = list(range(1, 26))
     jogos_gerados = []
-    
-    # Distribuição Proporcional Inteligente (70% com 9 repetidas / 30% com 8 repetidas)
     qtde_9_repetidas = int(quantidade_total * 0.7)
     
     tentativas = 0
-    # Loop de segurança para evitar travamentos
     while len(jogos_gerados) < qtde_9_repetidas and tentativas < 5000:
         tentativas += 1
         sugestao = sorted(random.sample(todos_numeros, 15))
@@ -93,16 +135,12 @@ def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
 # ==============================================================================
 # INTERFACE DO USUÁRIO (FRONT-END)
 # ==============================================================================
-
 st.title("🎯 LotoAnálise Pro")
 st.subheader("Otimizador Estatístico Avançado para Lotofácil")
-st.caption("Versão Beta de Validação Comercial — Modelo Híbrido Freemium")
+st.caption("Acesso Exclusivo de Assinantes")
 st.write("---")
 
-# BARRA LATERAL: Entrada do Último Concurso e Configurações
 st.sidebar.header("🎛️ Painel de Controle")
-st.sidebar.write("Configure abaixo os dados do sorteio base para realizar o cruzamento:")
-
 resultado_input = st.sidebar.text_input(
     "Dezenas do Último Concurso (Separadas por espaço ou vírgula):",
     value="02, 03, 04, 05, 06, 07, 08, 09, 12, 13, 15, 18, 21, 22, 25"
@@ -117,15 +155,6 @@ except ValueError:
 
 quantidade_jogos = st.sidebar.slider("Quantidade de Jogos para Gerar:", min_value=1, max_value=15, value=10)
 
-st.sidebar.write("---")
-st.sidebar.markdown("""
-**💎 Recursos Premium Bloqueados**
-* *Exportador de Volantes em PDF para impressão*
-* *Análise retroativa de lucros históricos*
-* *Alertas Push de tendências matemáticas*
-""")
-
-# ÁREA CENTRAL: Dashboard Analítico do Último Concurso
 if len(ultimo_sorteio_set) == 15:
     st.markdown("### 📊 Análise de Comportamento do Último Concurso")
     
@@ -135,54 +164,27 @@ if len(ultimo_sorteio_set) == 15:
     u_moldura = len(ultimo_sorteio_set.intersection(MOLDURA))
     
     col1, col2, col3 = st.columns(3)
-    
     with col1:
-        st.markdown(f"""
-        <div class="metric-card">
-            <h4>Pares vs Ímpares</h4>
-            <p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_impares}Í / {u_pares}P</p>
-            <small>Padrão ideal: 8Í / 7P ou 7Í / 8P</small>
-        </div>
-        """, unsafe_allow_html=True)
-        
+        st.markdown(f'<div class="metric-card"><h4>Pares vs Ímpares</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_impares}Í / {u_pares}P</p><small>Padrão: 8Í/7P ou 7Í/8P</small></div>', unsafe_allow_html=True)
     with col2:
-        st.markdown(f"""
-        <div class="metric-card">
-            <h4>Números Primos</h4>
-            <p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_primos} dezenas</p>
-            <small>Padrão ideal: 5 ou 6 primos</small>
-        </div>
-        """, unsafe_allow_html=True)
-        
+        st.markdown(f'<div class="metric-card"><h4>Números Primos</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_primos} dezenas</p><small>Padrão: 5 ou 6 primos</small></div>', unsafe_allow_html=True)
     with col3:
-        st.markdown(f"""
-        <div class="metric-card">
-            <h4>Moldura (Bordas)</h4>
-            <p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_moldura} dezenas</p>
-            <small>Padrão ideal: 9 ou 10 na moldura</small>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><h4>Moldura (Bordas)</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_moldura} dezenas</p><small>Padrão: 9 ou 10 na borda</small></div>', unsafe_allow_html=True)
 
     st.write("---")
-    
-    # ÁREA CENTRAL: Geração Inteligente de Apostas
     st.markdown("### 🎲 Gerador Construtivo de Alta Probabilidade")
-    st.write("Clique no botão abaixo para rodar o filtro combinatório e criar seus cartões balanceados.")
     
-    # Criamos uma variável no estado da página para fixar os jogos gerados na tela
     if 'jogos_armazenados' not in st.session_state:
         st.session_state.jogos_armazenados = None
 
     if st.button("⚡ Gerar Combinações Otimizadas", type="primary"):
-        with st.spinner("Cruzando banco de dados..."):
+        with st.spinner("Cruzando dados..."):
             st.session_state.jogos_armazenados = gerar_jogos_estrategicos(quantidade_total=quantidade_jogos, ultimo_sorteio=ultimo_sorteio_set)
             
-    # Se existirem jogos gerados, exibe na tela e monta os botões de download
     if st.session_state.jogos_armazenados:
         jogos = st.session_state.jogos_armazenados
         st.success(f"Sucesso! {len(jogos)} jogos gerados e prontos para exportação.")
         
-        # Exibição visual dos bilhetes
         col_jogos_1, col_jogos_2 = st.columns(2)
         for idx, jogo in enumerate(jogos, 1):
             jogo_formatado = " - ".join(f"{n:02d}" for n in jogo)
@@ -198,7 +200,6 @@ if len(ultimo_sorteio_set) == 15:
         st.write("---")
         st.markdown("### 📥 Baixar Jogos Otimizados")
         
-        # --- PREPARAÇÃO DOS DADOS PARA DOWNLOAD ---
         texto_txt = ""
         for idx, jogo in enumerate(jogos, 1):
             texto_txt += f"Jogo {idx:02d}: " + " - ".join(f"{n:02d}" for n in jogo) + "\n"
@@ -208,25 +209,10 @@ if len(ultimo_sorteio_set) == 15:
         df_jogos.index = [f"Jogo {i:02d}" for i in range(1, len(jogos) + 1)]
         dados_csv = df_jogos.to_csv().encode('utf-8')
         
-        # Botões lado a lado para download
         col_btn1, col_btn2 = st.columns(2)
-        
         with col_btn1:
-            st.download_button(
-                label="📄 Baixar em Arquivo de Texto (.txt)",
-                data=texto_txt,
-                file_name="jogos_lotofacil_otimizados.txt",
-                mime="text/plain",
-                use_container_width=True
-            )
-            
+            st.download_button(label="📄 Baixar em Texto (.txt)", data=texto_txt, file_name="jogos_lotofacil.txt", mime="text/plain", use_container_width=True)
         with col_btn2:
-            st.download_button(
-                label="📊 Baixar em Planilha (.csv / Excel)",
-                data=dados_csv,
-                file_name="jogos_lotofacil_planilha.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
+            st.download_button(label="📊 Baixar em Planilha (.csv)", data=dados_csv, file_name="jogos_lotofacil.csv", mime="text/csv", use_container_width=True)
 else:
-    st.warning("⚠️ Aguardando a digitação de exatamente 15 dezenas válidas na barra lateral para ativar o aplicativo.")
+    st.warning("⚠️ Aguardando digitação de 15 dezenas válidas.")
