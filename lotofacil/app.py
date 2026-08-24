@@ -6,7 +6,7 @@ import pandas as pd
 # CONFIGURAÇÕES DA PÁGINA E ESTILIZAÇÃO CUSTOMIZADA
 # ==============================================================================
 st.set_page_config(
-    page_title="LotoAnálise Pro",
+    page_title="Otimizador Lotofácil Pro",
     page_icon="🎯",
     layout="wide"
 )
@@ -56,7 +56,7 @@ if 'autenticado' not in st.session_state:
 
 if not st.session_state.autenticado:
     st.markdown("### 🔒 Acesso Restrito — Área Exclusiva de Assinantes")
-    st.write("O **LotoAnálise Pro** é um otimizador estatístico avançado de alta precisão.")
+    st.write("O **Otimizador Lotofácil Pro** é um otimizador estatístico avançado de alta precisão.")
     
     col_login_1, col_login_2 = st.columns(2)
     
@@ -78,7 +78,7 @@ if not st.session_state.autenticado:
         # ⚠️ SUBSTITUA O LINK ABAIXO PELO SEU LINK DE CHECKOUT COPIADO DA KIWIFY ⚠️
         link_kiwify = "https://kiwify.com.br" 
         
-        st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">⚡ Quero Acesso Anual por R$ 49,90</a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">⚡ Quero Acesso por R$ 9,90</a>', unsafe_allow_html=True)
         st.caption("Garantia total de 7 dias protegida por lei.")
         
     st.stop()
@@ -118,7 +118,7 @@ def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
     qtde_9_repetidas = int(quantidade_total * 0.7)
     
     tentativas = 0
-    while len(jogos_gerados) < qtde_9_repetidas and tentativas < 5000:
+    while len(jogos_gerados) < qtde_9_repetidas and tentatives < 5000:
         tentativas += 1
         sugestao = sorted(random.sample(todos_numeros, 15))
         if validar_jogo(sugestao, ultimo_sorteio, qtde_repetidos=9) and (sugestao not in jogos_gerados):
@@ -135,8 +135,8 @@ def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
 # ==============================================================================
 # INTERFACE DO USUÁRIO (FRONT-END)
 # ==============================================================================
-st.title("🎯 LotoAnálise Pro")
-st.subheader("Otimizador Estatístico Avançado para Lotofácil")
+st.title("🎯 Otimizador Lotofácil Pro")
+st.subheader("Análise Estatística Avançada")
 st.caption("Acesso Exclusivo de Assinantes")
 st.write("---")
 
