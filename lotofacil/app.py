@@ -52,17 +52,17 @@ def validar_jogo(combinacao, ultimo_sorteio, qtde_repetidos):
         
     # Filtro 2: Proporção de Pares e Ímpares (Aceita apenas 7 ou 8 pares)
     pares = len([n for n in jogo if n % 2 == 0])
-    if pares not in:
+    if pares not in (7, 8):
         return False
         
     # Filtro 3: Quantidade de Primos (Aceita apenas 5 ou 6 primos)
     primos = len(jogo.intersection(NUMEROS_PRIMOS))
-    if primos not in:
+    if primos not in (5, 6):
         return False
         
     # Filtro 4: Quantidade na Moldura (Aceita apenas 9 ou 10 na borda)
     moldura = len(jogo.intersection(MOLDURA))
-    if moldura not in:
+    if moldura not in (9, 10):
         return False
         
     return True
@@ -199,12 +199,10 @@ if len(ultimo_sorteio_set) == 15:
         st.markdown("### 📥 Baixar Jogos Otimizados")
         
         # --- PREPARAÇÃO DOS DADOS PARA DOWNLOAD ---
-        # 1. Formato Texto (.txt) - Um jogo por linha separado por traço
         texto_txt = ""
         for idx, jogo in enumerate(jogos, 1):
             texto_txt += f"Jogo {idx:02d}: " + " - ".join(f"{n:02d}" for n in jogo) + "\n"
             
-        # 2. Formato Planilha (.csv) - Dezenas separadas em colunas estruturadas
         colunas_csv = [f"Dezena_{i}" for i in range(1, 16)]
         df_jogos = pd.DataFrame(jogos, columns=colunas_csv)
         df_jogos.index = [f"Jogo {i:02d}" for i in range(1, len(jogos) + 1)]
