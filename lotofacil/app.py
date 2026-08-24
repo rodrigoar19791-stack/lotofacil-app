@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+import pandas as pd
 
 # ==============================================================================
 # CONFIGURAÇÕES DA PÁGINA E ESTILIZAÇÃO CUSTOMIZADA
@@ -51,17 +52,17 @@ def validar_jogo(combinacao, ultimo_sorteio, qtde_repetidos):
         
     # Filtro 2: Proporção de Pares e Ímpares (Aceita apenas 7 ou 8 pares)
     pares = len([n for n in jogo if n % 2 == 0])
-    if pares not in [7, 8]:
+    if pares not in:
         return False
         
     # Filtro 3: Quantidade de Primos (Aceita apenas 5 ou 6 primos)
     primos = len(jogo.intersection(NUMEROS_PRIMOS))
-    if primos not in [5, 6]:
+    if primos not in:
         return False
         
     # Filtro 4: Quantidade na Moldura (Aceita apenas 9 ou 10 na borda)
     moldura = len(jogo.intersection(MOLDURA))
-    if moldura not in [9, 10]:
+    if moldura not in:
         return False
         
     return True
@@ -93,7 +94,6 @@ def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
 # INTERFACE DO USUÁRIO (FRONT-END)
 # ==============================================================================
 
-# Cabeçalho Principal (Aparência de Produto Comercial)
 st.title("🎯 LotoAnálise Pro")
 st.subheader("Otimizador Estatístico Avançado para Lotofácil")
 st.caption("Versão Beta de Validação Comercial — Modelo Híbrido Freemium")
@@ -103,13 +103,11 @@ st.write("---")
 st.sidebar.header("🎛️ Painel de Controle")
 st.sidebar.write("Configure abaixo os dados do sorteio base para realizar o cruzamento:")
 
-# Input padrão preenchido com o concurso do dia 17/08 para facilitar o teste
 resultado_input = st.sidebar.text_input(
     "Dezenas do Último Concurso (Separadas por espaço ou vírgula):",
     value="02, 03, 04, 05, 06, 07, 08, 09, 12, 13, 15, 18, 21, 22, 25"
 )
 
-# Trata a entrada de texto do usuário para converter em um Set numérico estável
 try:
     limpo = resultado_input.replace(",", " ").split()
     ultimo_sorteio_set = {int(x) for x in limpo if 1 <= int(x) <= 25}
@@ -117,7 +115,6 @@ except ValueError:
     st.sidebar.error("Por favor, insira apenas números válidos entre 01 e 25.")
     ultimo_sorteio_set = set()
 
-# Controle do volume de jogos (Simulando barreira do plano Premium)
 quantidade_jogos = st.sidebar.slider("Quantidade de Jogos para Gerar:", min_value=1, max_value=15, value=10)
 
 st.sidebar.write("---")
@@ -132,13 +129,11 @@ st.sidebar.markdown("""
 if len(ultimo_sorteio_set) == 15:
     st.markdown("### 📊 Análise de Comportamento do Último Concurso")
     
-    # Cálculos das métricas do concurso base inserido
     u_pares = len([n for n in ultimo_sorteio_set if n % 2 == 0])
     u_impares = 15 - u_pares
     u_primos = len(ultimo_sorteio_set.intersection(NUMEROS_PRIMOS))
     u_moldura = len(ultimo_sorteio_set.intersection(MOLDURA))
     
-    # Exibição dos cards visuais usando o layout de colunas do Streamlit
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -174,30 +169,66 @@ if len(ultimo_sorteio_set) == 15:
     st.markdown("### 🎲 Gerador Construtivo de Alta Probabilidade")
     st.write("Clique no botão abaixo para rodar o filtro combinatório e criar seus cartões balanceados.")
     
-    if st.button("⚡ Gerar Combinações Otimizadas", type="primary"):
-        with st.spinner("Cruzando banco de dados e aplicando travas matemáticas..."):
-            jogos = gerar_jogos_estrategicos(quantidade_total=quantidade_jogos, ultimo_sorteio=ultimo_sorteio_set)
-            
-            st.success(f"Sucesso! {len(jogos)} jogos gerados seguindo a proporção ideal de repetições (70% com 9 repetidas / 30% com 8 repetidas).")
-            
-            # Divide os jogos na tela em duas colunas para melhorar a diagramação (UI)
-            col_jogos_1, col_jogos_2 = st.columns(2)
-            
-            for idx, jogo in enumerate(jogos, 1):
-                # Formata os números com dois dígitos (ex: 02 em vez de 2)
-                jogo_formatado = " - ".join(f"{n:02d}" for n in jogo)
-                
-                # Joga metade dos bilhetes na coluna 1 e metade na coluna 2
-                if idx <= (len(jogos) / 2):
-                    with col_jogos_1:
-                        st.markdown(f'**Bilhete {idx:02d}:**')
-                        st.markdown(f'<div class="game-box">{jogo_formatado}</div>', unsafe_allow_html=True)
-                else:
-                    with col_jogos_2:
-                        st.markdown(f'**Bilhete {idx:02d}:**')
-                        st.markdown(f'<div class="game-box">{jogo_formatado}</div>', unsafe_allow_html=True)
-                        
-            st.info("💡 Dica comercial: Copie as dezenas acima e registre-as diretamente no site ou app oficial das Loterias Caixa.")
+    # Criamos uma variável no estado da página para fixar os jogos gerados na tela
+    if 'jogos_armazenados' not in st.session_state:
+        st.session_state.jogos_armazenados = None
 
+    if st.button("⚡ Gerar Combinações Otimizadas", type="primary"):
+        with st.spinner("Cruzando banco de dados..."):
+            st.session_state.jogos_armazenados = gerar_jogos_estrategicos(quantidade_total=quantidade_jogos, ultimo_sorteio=ultimo_sorteio_set)
+            
+    # Se existirem jogos gerados, exibe na tela e monta os botões de download
+    if st.session_state.jogos_armazenados:
+        jogos = st.session_state.jogos_armazenados
+        st.success(f"Sucesso! {len(jogos)} jogos gerados e prontos para exportação.")
+        
+        # Exibição visual dos bilhetes
+        col_jogos_1, col_jogos_2 = st.columns(2)
+        for idx, jogo in enumerate(jogos, 1):
+            jogo_formatado = " - ".join(f"{n:02d}" for n in jogo)
+            if idx <= (len(jogos) / 2):
+                with col_jogos_1:
+                    st.markdown(f'**Bilhete {idx:02d}:**')
+                    st.markdown(f'<div class="game-box">{jogo_formatado}</div>', unsafe_allow_html=True)
+            else:
+                with col_jogos_2:
+                    st.markdown(f'**Bilhete {idx:02d}:**')
+                    st.markdown(f'<div class="game-box">{jogo_formatado}</div>', unsafe_allow_html=True)
+        
+        st.write("---")
+        st.markdown("### 📥 Baixar Jogos Otimizados")
+        
+        # --- PREPARAÇÃO DOS DADOS PARA DOWNLOAD ---
+        # 1. Formato Texto (.txt) - Um jogo por linha separado por traço
+        texto_txt = ""
+        for idx, jogo in enumerate(jogos, 1):
+            texto_txt += f"Jogo {idx:02d}: " + " - ".join(f"{n:02d}" for n in jogo) + "\n"
+            
+        # 2. Formato Planilha (.csv) - Dezenas separadas em colunas estruturadas
+        colunas_csv = [f"Dezena_{i}" for i in range(1, 16)]
+        df_jogos = pd.DataFrame(jogos, columns=colunas_csv)
+        df_jogos.index = [f"Jogo {i:02d}" for i in range(1, len(jogos) + 1)]
+        dados_csv = df_jogos.to_csv().encode('utf-8')
+        
+        # Botões lado a lado para download
+        col_btn1, col_btn2 = st.columns(2)
+        
+        with col_btn1:
+            st.download_button(
+                label="📄 Baixar em Arquivo de Texto (.txt)",
+                data=texto_txt,
+                file_name="jogos_lotofacil_otimizados.txt",
+                mime="text/plain",
+                use_container_width=True
+            )
+            
+        with col_btn2:
+            st.download_button(
+                label="📊 Baixar em Planilha (.csv / Excel)",
+                data=dados_csv,
+                file_name="jogos_lotofacil_planilha.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
 else:
     st.warning("⚠️ Aguardando a digitação de exatamente 15 dezenas válidas na barra lateral para ativar o aplicativo.")
