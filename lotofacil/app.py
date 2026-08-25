@@ -73,14 +73,13 @@ if not st.session_state.autenticado:
     st.subheader("Inteligência Estatística contra a Sorte")
     st.write("---")
 
-    # Bloco de Fundamentação Científica visível para visitantes
     st.markdown("""
     <div class="fundamento-card">
         <h3 style="color: #2e7d32; margin-top:0;">🔬 Como a Engenharia Matemática Otimiza Suas Chances?</h3>
         <p>A maioria dos apostadores queima dinheiro escolhendo dezenas aleatórias. No entanto, o histórico global de todos os concursos da Lotofácil revela uma <b>tendência matemática extremamente rígida e previsível</b>:</p>
         <ul>
             <li><b>A Lei das Repetições:</b> Em cerca de <b>80% dos sorteios</b>, o resultado repete exatamente <b>8, 9 ou 10 números</b> do concurso anterior (sendo 9 a média absoluta mais frequente). Combinações fora disso (como repetir apenas 5 ou mais de 12) são anomalias raras.</li>
-            <li><b>O Equilíbrio dos Pares (P) e Ímpares (Í):</b> Mais de 57% dos resultados históricos concentram-se nas proporções exatas de <b>8Í / 7P</b> ou <b>7Í / 8P</b>.</li>
+            <li><b>O Equilíbrio dos Pares (P) e Ímpares (Í):</b> Mais de 57% dos resultados históricos concentram-se nas proporções exatas de <b>8Í / 7P</b> or <b>7Í / 8P</b>.</li>
             <li><b>O Quadrante dos Primos:</b> Sorteios legítimos contêm rigorosamente entre <b>5 e 6 números primos</b> na mesma cartela em mais de 60% das vezes.</li>
         </ul>
         <p><b>O que este software faz?</b> Nosso algoritmo de força bruta analisa o último concurso inserido e descarta milhares de cartões matematicamente inviáveis. Ele só entrega para você bilhetes que preencham simultaneamente todos esses critérios de alta probabilidade.</p>
@@ -104,7 +103,7 @@ if not st.session_state.autenticado:
         st.markdown("#### ⚡ Não tem uma senha?")
         st.write("Ative seu acesso instantâneo via PIX para destravar o gerador inteligente agora mesmo e baixar seus jogos salvos em Excel ou Texto.")
         
-        # LINK DE CHECKOUT DA KIWIFY
+        # COLOQUE AQUI O SEU LINK DE VENDAS DA KIWIFY SE JÁ TIVER
         link_kiwify = "https://kiwify.com.br" 
         
         st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por Apenas R$ 9,90</a>', unsafe_allow_html=True)
@@ -196,7 +195,6 @@ if len(ultimo_sorteio_set) == 15:
 
     st.write("---")
     st.markdown("### 🎲 Gerador Inteligente Ajustado")
-    st.caption("O robô irá estruturar os bilhetes aplicando as travas estatísticas acima com base no concurso inserido.")
     
     if 'jogos_armazenados' not in st.session_state:
         st.session_state.jogos_armazenados = None
@@ -207,7 +205,7 @@ if len(ultimo_sorteio_set) == 15:
             
     if st.session_state.jogos_armazenados:
         jogos = st.session_state.jogos_armazenados
-        st.success(f"Sucesso! {len(jogos)} jogos gerados seguindo a proporção ideal (70% com 9 repetidas / 30% com 8 repetidas).")
+        st.success(f"Sucesso! {len(jogos)} jogos gerados seguindo a proporção ideal.")
         
         col_jogos_1, col_jogos_2 = st.columns(2)
         for idx, jogo in enumerate(jogos, 1):
@@ -218,4 +216,7 @@ if len(ultimo_sorteio_set) == 15:
                     st.markdown(f'<div class="game-box">{jogo_formatado}</div>', unsafe_allow_html=True)
             else:
                 with col_jogos_2:
-st.markdown(f'Bilhete {idx:02d}:')st.markdown(f'{jogo_formatado}', unsafe_allow_html=True)st.write("---")st.markdown("### 📥 Exportar Jogos Otimizados")texto_txt = ""for idx, jogo in enumerate(jogos, 1):texto_txt += f"Jogo {idx:02d}: " + " - ".join(f"{n:02d}" for n in jogo) + "\n"colunas_csv = [f"Dezena_{i}" for i in range(1, 16)]df_jogos = pd.DataFrame(jogos, columns=colunas_csv)df_jogos.index = [f"Jogo {i:02d}" for i in range(1, len(jogos) + 1)]dados_csv = df_jogos.to_csv().encode('utf-8')col_btn1, col_btn2 = st.columns(2)with col_btn1:st.download_button(label="📄 Baixar em Texto (.txt)", data=texto_txt, file_name="jogos_lotofacil.txt", mime="text/plain", use_container_width=True)with col_btn2:st.download_button(label="📊 Baixar em Planilha (.csv)", data=dados_csv, file_name="jogos_lotofacil.csv", mime="text/csv", use_container_width=True)else:st.warning("⚠️ Aguardando digitação de 15 dezenas válidas.")
+                    st.markdown(f'**Bilhete {idx:02d}:**')
+                    st.markdown(f'<div class="game-box">{jogo_formatado}</div>', unsafe_allow_html=True)
+        
+        st.write("---")
