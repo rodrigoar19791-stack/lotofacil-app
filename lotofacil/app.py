@@ -248,5 +248,4 @@ if len(ultimo_sorteio_set) == 15:
         st.markdown("### 🔥 Tendências Clínicas e Ciclos")
         st.caption("Cruzamento com o banco de dados de comportamento de frequência:")
         
-        # Inteligência Computacional de Grupos Recomendados
-        dezenas_frias = {1, 10, 11, 14, 16, 17, 19, 20, 23, 24}.difference(ultimo_sorteio_set)
+        # Inteligência Computacional de Grupos Recomendados (Corrigido e Testado)
