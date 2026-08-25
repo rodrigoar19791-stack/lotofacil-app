@@ -124,7 +124,7 @@ if not st.session_state.autenticado:
         <p>A maioria dos apostadores queima dinheiro escolhendo dezenas aleatórias. No entanto, o histórico global de todos os concursos da Lotofácil revela uma <b>tendência matemática extremamente rígida e previsível</b>:</p>
         <ul>
             <li><b>A Lei das Repetições:</b> Em cerca de <b>80% dos sorteios</b>, o resultado repete exatamente <b>8, 9 ou 10 números</b> do concurso anterior.</li>
-            <li><b>O Equilíbrio dos Pares e Ímpares:</b> Mais de 57% dos resultados concentram-se nas proporções exatas de <b>8Í / 7P</b> ou <b>7Í / 8P</b>.</li>
+            <li><b>O Equilíbrio dos Pares e Ímpares:</b> Mais de 57% dos resultadosicos concentram-se nas proporções exatas de <b>8Í / 7P</b> ou <b>7Í / 8P</b>.</li>
             <li><b>O Quadrante dos Primos:</b> Sorteios legítimos contêm rigorosamente entre <b>5 e 6 números primos</b>.</li>
         </ul>
     </div>
@@ -148,20 +148,25 @@ if not st.session_state.autenticado:
         st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por Apenas R$ 9,90</a>', unsafe_allow_html=True)
     st.stop()
 
-# FUNÇÕES DO MOTOR DE PROCESSAMENTO
+# FUNÇÕES DO MOTOR DE PROCESSAMENTO (LÓGICA NOVA E BLINDADA)
 def validar_jogo(combinacao, ultimo_sorteio, qtde_repetidos):
     jogo = set(combinacao)
+    
     if len(jogo.intersection(ultimo_sorteio)) != qtde_repetidos:
         return False
+        
     pares = len([n for n in jogo if n % 2 == 0])
-    if pares not in:  # LINHA CORRIGIDA FIXA
+    if pares != 7 and pares != 8:
         return False
+        
     primos = len(jogo.intersection(NUMEROS_PRIMOS))
-    if primos not in: # LINHA CORRIGIDA FIXA
+    if primos != 5 and primos != 6:
         return False
+        
     moldura = len(jogo.intersection(MOLDURA))
-    if moldura not in: # LINHA CORRIGIDA FIXA
+    if moldura != 9 and moldura != 10:
         return False
+        
     return True
 
 def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
@@ -263,4 +268,3 @@ if len(ultimo_sorteio_set) == 15:
         jogos = st.session_state.jogos_armazenados
         st.success(f"Sucesso! {len(jogos)} jogos calibrados gerados.")
         
-        col_jogos_1, col_jogos_2 = st.columns(2)
