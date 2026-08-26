@@ -10,16 +10,16 @@ st.set_page_config(
     layout="wide"
 )
 
-# Estilização profissional
+# Estilização profissional compacta
 st.markdown("""
     <style>
     .metric-card {
         background-color: #f8f9fa;
-        border-radius: 10px;
-        padding: 15px;
+        border-radius: 8px;
+        padding: 10px 15px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
         border-left: 5px solid #2e7d32;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
     .fundamento-card {
         background-color: #f1f8e9;
@@ -53,13 +53,13 @@ st.markdown("""
     .volante-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-        max-width: 320px;
-        margin: 10px 0;
+        gap: 6px;
+        max-width: 300px;
+        margin: 5px 0;
     }
     .bola-desativada {
-        width: 45px;
-        height: 45px;
+        width: 42px;
+        height: 42px;
         background-color: #ffffff;
         border: 2px solid #bdbdbd;
         color: #757575;
@@ -68,11 +68,11 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 15px;
     }
     .bola-ativada {
-        width: 45px;
-        height: 45px;
+        width: 42px;
+        height: 42px;
         background-color: #1976d2;
         border: 2px solid #0d47a1;
         color: white;
@@ -81,8 +81,8 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 16px;
-        box-shadow: 0px 0px 6px #1976d2;
+        font-size: 15px;
+        box-shadow: 0px 0px 4px #1976d2;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -104,9 +104,7 @@ def buscar_ultimo_sorteio_caixa():
                 return dezenas, str(concurso)
     except Exception:
         pass
-    # Lista de contingência caso a API externa falhe temporariamente
-    dezenas_seguranca = [2, 3, 4, 5, 9, 10, 11, 12, 15, 16, 17, 18, 21, 23, 25]
-    return dezenas_seguranca, "3771"
+    return, "3771"
 
 # TELA DE LOGIN
 SENHA_CORRETA = "LOTO2026"
@@ -144,7 +142,6 @@ if not st.session_state.autenticado:
             
     st.write("---")
     st.markdown("#### ⚡ Não tem uma senha?")
-    st.write("Ative seu acesso via PIX na Kiwify para destravar o gerador inteligente:")
     link_kiwify = "https://kiwify.com.br" 
     st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por Apenas R$ 9,90</a>', unsafe_allow_html=True)
     st.stop()
@@ -193,17 +190,16 @@ ultimo_sorteio_set = set(dezenas_oficiais)
 
 # INTERFACE INTERNA DO SISTEMA
 st.title("🎯 Otimizador Lotofácil Pro")
-st.subheader(f"Painel Avançado — Concurso Base da Caixa: Nº {num_concurso}")
-st.write("---")
+st.subheader(f"Painel Avançado Base Caixa: Nº {num_concurso}")
 
 st.sidebar.header("🎛️ Configurações")
-st.sidebar.info(f"Concurso atualizado via API: {', '.join(f'{n:02d}' for n in dezenas_oficiais)}")
+st.sidebar.info(f"Concurso via API: {', '.join(f'{n:02d}' for n in dezenas_oficiais)}")
 quantidade_jogos = st.sidebar.slider("Quantidade de Jogos para Gerar:", min_value=1, max_value=15, value=10)
 
 if len(ultimo_sorteio_set) == 15:
     
-    # 🎲 1. GERADOR FIXADO NO TOPO
-    st.markdown("### 🎲 Inteligência Artificial: Gerar Apostas Filtradas")
+    # 🎲 1. GERADOR
+    st.markdown("### 🎲 Gerar Apostas Filtradas")
     
     if 'jogos_armazenados' not in st.session_state:
         st.session_state.jogos_armazenados = None
@@ -228,7 +224,6 @@ if len(ultimo_sorteio_set) == 15:
         st.download_button(label="📄 Baixar em Texto (.txt)", data=texto_txt, file_name="jogos_lotofacil.txt", mime="text/plain", use_container_width=True)
         st.download_button(label="📊 Baixar em Planilha (.csv)", data=dados_csv, file_name="jogos_lotofacil.csv", mime="text/csv", use_container_width=True)
             
-        st.write("---")
         for idx, jogo_gerado in enumerate(jogos, 1):
             jogo_formatado = " - ".join(f"{n:02d}" for n in jogo_gerado)
             st.markdown(f'**Bilhete {idx:02d}:**')
@@ -247,9 +242,8 @@ if len(ultimo_sorteio_set) == 15:
 
     st.write("---")
     
-    # 🔥 3. TENDÊNCIAS E CICLOS AUTOMÁTICOS
+    # 🔥 3. TENDÊNCIAS E CICLOS COMPACTOS
     st.markdown("### 🔥 Tendências Clínicas e Ciclos")
-    
     todas_dezenas = set(range(1, 26))
     dezenas_frias = sorted(list(todas_dezenas.difference(ultimo_sorteio_set)))
     dezenas_quentes = sorted(list(ultimo_sorteio_set.intersection({2, 3, 4, 5, 9, 10, 11, 12, 13, 15, 17, 21, 25})))
@@ -257,10 +251,15 @@ if len(ultimo_sorteio_set) == 15:
     txt_quentes = " - ".join(f"{n:02d}" for n in dezenas_quentes)
     txt_frias = " - ".join(f"{n:02d}" for n in dezenas_frias)
     
-    st.markdown("**Dezenas Quentes (Alta Frequência Recente):**")
-    st.success(txt_quentes)
-    
-    st.markdown("**Dezenas Frias (Atrasadas no Ciclo / Tendência de Volta):**")
-    st.info(txt_frias)
+    st.success(f"🔻 **Quentes (Alta Frequência):** {txt_quentes}")
+    st.info(f"🔹 **Frias (Atrasadas / Ciclo):** {txt_frias}")
 
     st.write("---")
+    
+    # 📊 4. INDICADORES ESTATÍSTICOS DIRETOS
+    st.markdown("### 📊 Indicadores Estatísticos")
+    u_pares = len([n for n in ultimo_sorteio_set if n % 2 == 0])
+    u_impares = 15 - u_pares
+    u_primos = len(ultimo_sorteio_set.intersection(NUMEROS_PRIMOS))
+    u_moldura = len(ultimo_sorteio_set.intersection(MOLDURA))
+    
