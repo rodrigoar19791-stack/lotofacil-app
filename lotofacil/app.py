@@ -1,7 +1,6 @@
 import streamlit as st
 import random
 import pandas as pd
-import requests
 
 # CONFIGURAÇÕES DA PÁGINA
 st.set_page_config(
@@ -90,22 +89,6 @@ st.markdown("""
 NUMEROS_PRIMOS = {2, 3, 5, 7, 11, 13, 17, 19, 23}
 MOLDURA = {1, 2, 3, 4, 5, 6, 10, 11, 15, 16, 20, 21, 22, 23, 24, 25}
 
-# BUSCA AUTOMÁTICA DO SORTEIO DA CAIXA NA INTERNET
-@st.cache_data(ttl=1800)
-def buscar_ultimo_sorteio_caixa():
-    try:
-        url = "https://herokuapp.com"
-        resposta = requests.get(url, timeout=10)
-        if resposta.status_code == 200:
-            dados = resposta.json()
-            dezenas = [int(n) for n in dados.get("dezenas", [])]
-            concurso = dados.get("concurso", "3771")
-            if len(dezenas) == 15:
-                return dezenas, str(concurso)
-    except Exception:
-        pass
-    return, "3771"
-
 # TELA DE LOGIN
 SENHA_CORRETA = "LOTO2026"
 
@@ -184,16 +167,17 @@ def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
             
     return jogos_gerados
 
-# DISPARA A BUSCA AUTOMÁTICA
-dezenas_oficiais, num_concurso = buscar_ultimo_sorteio_caixa()
+# DEZENAS FIXAS DO ÚLTIMO CONCURSO BASE (BLINDADO)
+dezenas_oficiais = [2, 3, 4, 5, 9, 10, 11, 12, 15, 16, 17, 18, 21, 23, 25]
 ultimo_sorteio_set = set(dezenas_oficiais)
+num_concurso = "3771"
 
 # INTERFACE INTERNA DO SISTEMA
 st.title("🎯 Otimizador Lotofácil Pro")
 st.subheader(f"Painel Avançado Base Caixa: Nº {num_concurso}")
 
 st.sidebar.header("🎛️ Configurações")
-st.sidebar.info(f"Concurso via API: {', '.join(f'{n:02d}' for n in dezenas_oficiais)}")
+st.sidebar.info(f"Concurso Carregado: {', '.join(f'{n:02d}' for n in dezenas_oficiais)}")
 quantidade_jogos = st.sidebar.slider("Quantidade de Jogos para Gerar:", min_value=1, max_value=15, value=10)
 
 if len(ultimo_sorteio_set) == 15:
@@ -263,3 +247,9 @@ if len(ultimo_sorteio_set) == 15:
     u_primos = len(ultimo_sorteio_set.intersection(NUMEROS_PRIMOS))
     u_moldura = len(ultimo_sorteio_set.intersection(MOLDURA))
     
+    st.markdown(f'<div class="metric-card">⚖️ <b>Paridade:</b> {u_impares} Ímpares / {u_pares} Pares</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card">🔢 <b>Números Primos:</b> {u_primos} dezenas</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card">🔲 <b>Moldura (Bordas):</b> {u_moldura} dezenas</div>', unsafe_allow_html=True)
+
+else:
+    st.warning("⚠️ Aguardando dezenas válidas.")
