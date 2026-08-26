@@ -259,7 +259,12 @@ if len(ultimo_sorteio_set) == 15:
     dezenas_frias = sorted(list(todas_dezenas.difference(ultimo_sorteio_set)))
     dezenas_quentes = sorted(list(ultimo_sorteio_set.intersection({2, 3, 4, 5, 9, 10, 11, 12, 13, 15, 17, 21, 25})))
     
-    txt_quentes = " - ".join(f"{n:02d}" for n in dezenas_quentes)
+        txt_quentes = " - ".join(f"{n:02d}" for n in dezenas_quentes)
     txt_frias = " - ".join(f"{n:02d}" for n in dezenas_frias)
     
-    st.error(f"🔴 **Dezenas Quentes (Alta Frequência):** {txt_quentes}")
+    # Caixas robustas individuais para garantir exibição total na tela
+    st.markdown(f'🔻 **Dezenas Quentes (Alta Frequência Recente):**')
+    st.success(txt_quentes)
+    
+    st.markdown(f'🔹 **Dezenas Frias (Atrasadas no Ciclo / Tendência de Volta):**')
+    st.info(txt_frias)
