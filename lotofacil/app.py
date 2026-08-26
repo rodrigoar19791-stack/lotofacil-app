@@ -252,14 +252,14 @@ if len(ultimo_sorteio_set) == 15:
 
     st.write("---")
     
-    # 🔥 3. QUADRO DE TENDÊNCIAS EM TABELA NATIVA (IMPECÁVEL E À PROVA DE FALHAS)
+    # 🔥 3. TENDÊNCIAS E CICLOS (REESTRUTURADO SEM RISCOS DE QUEBRA)
     st.markdown("### 🔥 Tendências Clínicas e Ciclos")
     
     todas_dezenas = set(range(1, 26))
     dezenas_frias = sorted(list(todas_dezenas.difference(ultimo_sorteio_set)))
     dezenas_quentes = sorted(list(ultimo_sorteio_set.intersection({2, 3, 4, 5, 9, 10, 11, 12, 13, 15, 17, 21, 25})))
     
-    # Monta uma tabela profissional limpa
-    dados_tendencias = {
-        "Análise": ["Dezenas Quentes (Alta Frequência)", "Dezenas Frias (Atrasadas/Ciclo)"],
-        "Números Recomendados": [
+    txt_quentes = " - ".join(f"{n:02d}" for n in dezenas_quentes)
+    txt_frias = " - ".join(f"{n:02d}" for n in dezenas_frias)
+    
+    st.error(f"🔴 **Dezenas Quentes (Alta Frequência):** {txt_quentes}")
