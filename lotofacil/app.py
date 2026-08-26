@@ -19,6 +19,7 @@ st.markdown("""
         padding: 15px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
         border-left: 5px solid #2e7d32;
+        margin-bottom: 10px;
     }
     .fundamento-card {
         background-color: #f1f8e9;
@@ -51,10 +52,10 @@ st.markdown("""
         box-shadow: 0px 4px 10px rgba(46, 125, 50, 0.3);
     }
     .volante-container {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        display: flex;
+        flex-wrap: wrap;
         gap: 10px;
-        max-width: 350px;
+        max-width: 320px;
         margin: 20px 0;
     }
     .bola-desativada {
@@ -111,7 +112,7 @@ NUMEROS_PRIMOS = {2, 3, 5, 7, 11, 13, 17, 19, 23}
 MOLDURA = {1, 2, 3, 4, 5, 6, 10, 11, 15, 16, 20, 21, 22, 23, 24, 25}
 
 # BUSCA AUTOMÁTICA DO SORTEIO DA CAIXA NA INTERNET
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=1800)
 def buscar_ultimo_sorteio_caixa():
     try:
         url = "https://herokuapp.com"
@@ -162,7 +163,7 @@ if not st.session_state.autenticado:
             
     st.write("---")
     st.markdown("#### ⚡ Não tem uma senha?")
-    st.write("Ative seu acesso via PIX na Kiwify para destravar o gerador inteligente instantaneamente:")
+    st.write("Ative seu acesso via PIX na Kiwify para destravar o gerador inteligente:")
     link_kiwify = "https://kiwify.com.br" 
     st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por Apenas R$ 9,90</a>', unsafe_allow_html=True)
     st.stop()
@@ -203,7 +204,7 @@ def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
             
     return jogos_gerados
 
-# DISPARA A BUSCA DO SORTEIO DA CAIXA NA ABERTURA
+# DISPARA A BUSCA AUTOMÁTICA NA ABERTURA
 valores_padrao, num_concurso = buscar_ultimo_sorteio_caixa()
 
 # INTERFACE INTERNA DO SISTEMA
@@ -227,34 +228,32 @@ except ValueError:
 quantidade_jogos = st.sidebar.slider("Quantidade de Jogos para Gerar:", min_value=1, max_value=15, value=10)
 
 if len(ultimo_sorteio_set) == 15:
-    col_esquerda, col_direita = st.columns([1.2, 1])
     
-    with col_esquerda:
-        st.markdown("### 🗺️ Mapeamento Geográfico do Último Concurso")
-        html_volante = '<div class="volante-container">'
-        for i in range(1, 26):
-            classe_bola = "bola-ativada" if i in ultimo_sorteio_set else "bola-desativada"
-            html_volante += f'<div class="{classe_bola}">{i:02d}</div>'
-        html_volante += '</div>'
-        st.markdown(html_volante, unsafe_allow_html=True)
+    st.markdown("### 🗺️ Mapeamento Geográfico do Último Concurso")
+    html_volante = '<div class="volante-container">'
+    for i in range(1, 26):
+        classe_bola = "bola-ativada" if i in ultimo_sorteio_set else "bola-desativada"
+        html_volante += f'<div class="{classe_bola}">{i:02d}</div>'
+    html_volante += '</div>'
+    st.markdown(html_volante, unsafe_allow_html=True)
 
-    with col_direita:
-        st.markdown("### 🔥 Tendências Clínicas e Ciclos")
-        dezenas_frias = {1, 10, 11, 14, 16, 17, 19, 20, 23, 24}.difference(ultimo_sorteio_set)
-        dezenas_quentes = ultimo_sorteio_set.intersection({2, 3, 5, 13, 25, 9, 15})
-        
-        st.write("**Dezenas Quentes (Alta Frequência Recente):**")
-        html_quentes = ""
-        for n in sorted(dezenas_quentes):
-            html_quentes += f'<span class="badge-quente">{n:02d}</span> '
-        st.markdown(html_quentes if html_quentes != "" else "_Nenhuma_", unsafe_allow_html=True)
-        
-        st.write("---")
-        st.write("**Dezenas Frias (Atrasadas no Ciclo):**")
-        html_frias = ""
-        for n in sorted(dezenas_frias):
-            html_frias += f'<span class="badge-frio">{n:02d}</span> '
-        st.markdown(html_frias if html_frias != "" else "_Nenhuma_", unsafe_allow_html=True)
+    st.write("---")
+    st.markdown("### 🔥 Tendências Clínicas e Ciclos")
+    dezenas_frias = {1, 10, 11, 14, 16, 17, 19, 20, 23, 24}.difference(ultimo_sorteio_set)
+    dezenas_quentes = ultimo_sorteio_set.intersection({2, 3, 5, 13, 25, 9, 15})
+    
+    st.write("**Dezenas Quentes (Alta Frequência Recente):**")
+    html_quentes = ""
+    for n in sorted(dezenas_quentes):
+        html_quentes += f'<span class="badge-quente">{n:02d}</span> '
+    st.markdown(html_quentes if html_quentes != "" else "_Nenhuma_", unsafe_allow_html=True)
+    
+    st.write("---")
+    st.write("**Dezenas Frias (Atrasadas no Ciclo):**")
+    html_frias = ""
+    for n in sorted(dezenas_frias):
+        html_frias += f'<span class="badge-frio">{n:02d}</span> '
+    st.markdown(html_frias if html_frias != "" else "_Nenhuma_", unsafe_allow_html=True)
 
     st.write("---")
     st.markdown("### 📊 Indicadores Estatísticos do Concurso Base")
@@ -263,9 +262,10 @@ if len(ultimo_sorteio_set) == 15:
     u_primos = len(ultimo_sorteio_set.intersection(NUMEROS_PRIMOS))
     u_moldura = len(ultimo_sorteio_set.intersection(MOLDURA))
     
-    col_m1, col_m2, col_m3 = st.columns(3)
-    with col_m1:
-        st.markdown(f'<div class="metric-card"><h4>Pares vs Ímpares</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_impares}Í / {u_pares}P</p></div>', unsafe_allow_html=True)
-    with col_m2:
-        st.markdown(f'<div class="metric-card"><h4>Números Primos</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_primos} dezenas</p></div>', unsafe_allow_html=True)
-    with col_m3:
+    st.markdown(f'<div class="metric-card"><h4>Pares vs Ímpares</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_impares}Í / {u_pares}P</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card"><h4>Números Primos</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_primos} dezenas</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card"><h4>Moldura (Bordas)</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_moldura} dezenas</p></div>', unsafe_allow_html=True)
+
+    st.write("---")
+    st.markdown("### 🎲 Inteligência Artificial: Gerar Apostas Filtradas")
+    
