@@ -155,7 +155,7 @@ if not st.session_state.autenticado:
     if st.button("Destravar Otimizador", type="primary"):
         if senha_digitada == SENHA_CORRETA:
             st.session_state.autenticado = True
-            st.success("Acesso autorizado!")
+            st.success("Acesso authorized!")
             st.rerun()
         else:
             st.error("Senha incorreta.")
@@ -227,6 +227,7 @@ quantidade_jogos = st.sidebar.slider("Quantidade de Jogos para Gerar:", min_valu
 
 if len(ultimo_sorteio_set) == 15:
     
+    # 📌 GERADOR FIXADO NO TOPO
     st.markdown("### 🎲 Inteligência Artificial: Gerar Apostas Filtradas")
     
     if 'jogos_armazenados' not in st.session_state:
@@ -260,6 +261,7 @@ if len(ultimo_sorteio_set) == 15:
             
     st.write("---")
 
+    # VOLANTE VIRTUAL
     st.markdown("### 🗺️ Mapeamento Geográfico do Concurso")
     html_volante = '<div class="volante-container">'
     for i in range(1, 26):
@@ -269,5 +271,5 @@ if len(ultimo_sorteio_set) == 15:
     st.markdown(html_volante, unsafe_allow_html=True)
 
     st.write("---")
-    st.markdown("### 🔥 Tendências Clínicas e Ciclos")
-    dezenas_frias = {1, 10, 11, 14, 16, 17, 19, 20, 23, 24}.difference(ultimo_sorteio_set)
+    
+    # 📌 CÁLCULO DINÂMICO DE TENDÊNCIAS (CORRIGIDO PARA RECONHECER O CONCURSO ATUAL)
