@@ -104,7 +104,9 @@ def buscar_ultimo_sorteio_caixa():
                 return dezenas, str(concurso)
     except Exception:
         pass
-    return, "3771"
+    # Dezenas padrão de segurança do último sorteio oficial
+    dezenas_padrao = [2, 3, 4, 5, 9, 10, 11, 12, 15, 16, 17, 18, 21, 23, 25]
+    return dezenas_padrao, "3771"
 
 # TELA DE LOGIN
 SENHA_CORRETA = "LOTO2026"
@@ -185,7 +187,7 @@ def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
             
     return jogos_gerados
 
-# DISPARA A BUSCA AUTOMÁTICA DA CAIXA SÓLIDA COMO LISTA NUMÉRICA
+# DISPARA A BUSCA AUTOMÁTICA
 dezenas_oficiais, num_concurso = buscar_ultimo_sorteio_caixa()
 ultimo_sorteio_set = set(dezenas_oficiais)
 
@@ -243,7 +245,7 @@ st.markdown(html_volante, unsafe_allow_html=True)
 
 st.write("---")
 
-# 🔥 3. TENDÊNCIAS E CICLOS (CORRIGIDO PARA RECONHECIMENTO AUTOMÁTICO INDEPENDENTE)
+# 🔥 3. TENDÊNCIAS E CICLOS AUTOMÁTICOS
 st.markdown("### 🔥 Tendências Clínicas e Ciclos")
 
 todas_dezenas = set(range(1, 26))
