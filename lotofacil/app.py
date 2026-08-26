@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Estilização profissional
+# Estilização profissional de cassino e painéis de dados (SaaS Premium)
 st.markdown("""
     <style>
     .metric-card {
@@ -48,6 +48,7 @@ st.markdown("""
         font-weight: bold;
         border-radius: 5px;
         margin-top: 15px;
+        box-shadow: 0px 4px 10px rgba(46, 125, 50, 0.3);
     }
     .volante-container {
         display: grid;
@@ -81,6 +82,7 @@ st.markdown("""
         justify-content: center;
         font-weight: bold;
         font-size: 18px;
+        box-shadow: 0px 0px 8px #1976d2;
     }
     .badge-quente {
         background-color: #ffebee;
@@ -108,8 +110,8 @@ st.markdown("""
 NUMEROS_PRIMOS = {2, 3, 5, 7, 11, 13, 17, 19, 23}
 MOLDURA = {1, 2, 3, 4, 5, 6, 10, 11, 15, 16, 20, 21, 22, 23, 24, 25}
 
-# FUNÇÃO QUE BUSCA O ÚLTIMO SORTEIO OFICIAL DA CAIXA NA INTERNET
-@st.cache_data(ttl=3600)  # Guarda o resultado por 1 hora para o app ficar ultra veloz
+# BUSCA AUTOMÁTICA DO SORTEIO DA CAIXA NA INTERNET
+@st.cache_data(ttl=3600)
 def buscar_ultimo_sorteio_caixa():
     try:
         url = "https://herokuapp.com"
@@ -117,13 +119,11 @@ def buscar_ultimo_sorteio_caixa():
         if resposta.status_code == 200:
             dados = resposta.json()
             dezenas = [int(n) for n in dados.get("dezenas", [])]
-            concurso = dados.get("concurso", "Atual")
+            concurso = dados.get("concurso", "3771")
             if len(dezenas) == 15:
-                # Retorna em formato de texto separado por vírgula e o número do concurso
-                return ", ".join(f"{d:02d}" for d in sorted(dezenas)), concurso
+                return ", ".join(f"{d:02d}" for d in sorted(dezenas)), str(concurso)
     except Exception:
         pass
-    # Caso a API caia, usa o do dia 25/08 como plano de segurança (fallback)
     return "02, 03, 04, 05, 09, 10, 11, 12, 15, 16, 17, 18, 21, 23, 25", "3771"
 
 # TELA DE LOGIN
@@ -143,7 +143,7 @@ if not st.session_state.autenticado:
         <p>A maioria dos apostadores queima dinheiro escolhendo dezenas aleatórias. No entanto, o histórico global de todos os concursos da Lotofácil revela uma <b>tendência matemática extremamente rígida e previsível</b>:</p>
         <ul>
             <li><b>A Lei das Repetições:</b> Em cerca de <b>80% dos sorteios</b>, o resultado repete exatamente <b>8, 9 ou 10 números</b> do concurso anterior.</li>
-            <li><b>O Equilíbrio dos Pares e Ímpares:</b> Mais de 57% dos resultados concentram-se nas proporções exatas de <b>8Í / 7P</b> ou <b>7Í / 8P</b>.</li>
+            <li><b>O Equilíbrio dos Pares e Ímpares:</b> Mais de 57% dos resultados históricos concentram-se nas proporções exatas de <b>8Í / 7P</b> ou <b>7Í / 8P</b>.</li>
             <li><b>O Quadrante dos Primos:</b> Sorteios legítimos contêm rigorosamente entre <b>5 e 6 números primos</b>.</li>
         </ul>
     </div>
@@ -163,8 +163,9 @@ if not st.session_state.autenticado:
                 
     with col_login_2:
         st.markdown("#### ⚡ Não tem uma senha?")
+        st.write("Ative seu acesso via PIX na Kiwify para destravar o gerador inteligente:")
         link_kiwify = "https://kiwify.com.br" 
-        st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por Apenas R$ 9,90</a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por R$ 9,90</a>', unsafe_allow_html=True)
     st.stop()
 
 # FUNÇÕES DO MOTOR DE PROCESSAMENTO
@@ -203,7 +204,7 @@ def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
             
     return jogos_gerados
 
-# DISPARA A BUSCA AUTOMÁTICA DO SORTEIO NA ABERTURA DO APP
+# DISPARA A BUSCA DO SORTEIO DA CAIXA NA ABERTURA
 valores_padrao, num_concurso = buscar_ultimo_sorteio_caixa()
 
 # INTERFACE INTERNA DO SISTEMA
@@ -214,7 +215,7 @@ st.write("---")
 st.sidebar.header("🎛️ Configurações")
 resultado_input = st.sidebar.text_input(
     "Dezenas do Último Concurso:",
-    value=valores_padrao # Preenche sozinho com os números de ontem capturados na internet!
+    value=valores_padrao
 )
 
 try:
