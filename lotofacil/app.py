@@ -168,35 +168,44 @@ if not st.session_state.autenticado:
     st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por Apenas R$ 9,90</a>', unsafe_allow_html=True)
     st.stop()
 
-# FUNÇÕES DO MOTOR DE PROCESSAMENTO
+# FUNÇÕES DO MOTOR DE PROCESSAMENTO (CORRIGIDAS DEFINITIVAMENTE)
 def validar_jogo(combinacao, ultimo_sorteio, qtde_repetidos):
     jogo = set(combinacao)
+    
     if len(jogo.intersection(ultimo_sorteio)) != qtde_repetidos:
         return False
+        
     pares = len([n for n in jogo if n % 2 == 0])
     if pares != 7 and pares != 8:
         return False
+        
     primos = len(jogo.intersection(NUMEROS_PRIMOS))
     if primos != 5 and primos != 6:
         return False
+        
     moldura = len(jogo.intersection(MOLDURA))
     if moldura != 9 and moldura != 10:
         return False
+        
     return True
 
 def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
     todos_numeros = list(range(1, 26))
     jogos_gerados = []
-    qtde_9_repetidas = int(quantidade_total * 0.7)
     
+    # Distribuição Proporcional Inteligente (70% com 9 repetidas / 30% com 8 repetidas)
+    qtde_9_repetidas = int(quantidade_total * 0.7)
+    if qtde_9_repetidas < 1:
+        qtde_9_repetidas = 1
+        
     tentativas = 0
-    while len(jogos_gerados) < qtde_9_repetidas and tentativas < 3000:
+    while len(jogos_gerados) < qtde_9_repetidas and tentativas < 4000:
         tentativas += 1
         sugestao = sorted(random.sample(todos_numeros, 15))
         if validar_jogo(sugestao, ultimo_sorteio, qtde_repetidos=9) and (sugestao not in jogos_gerados):
             jogos_gerados.append(sugestao)
             
-    while len(jogos_gerados) < quantidade_total and tentativas < 6000:
+    while len(jogos_gerados) < quantidade_total and tentativas < 8000:
         tentativas += 1
         sugestao = sorted(random.sample(todos_numeros, 15))
         if validar_jogo(sugestao, ultimo_sorteio, qtde_repetidos=8) and (sugestao not in jogos_gerados):
@@ -264,8 +273,3 @@ if len(ultimo_sorteio_set) == 15:
     
     st.markdown(f'<div class="metric-card"><h4>Pares vs Ímpares</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_impares}Í / {u_pares}P</p></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="metric-card"><h4>Números Primos</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_primos} dezenas</p></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="metric-card"><h4>Moldura (Bordas)</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_moldura} dezenas</p></div>', unsafe_allow_html=True)
-
-    st.write("---")
-    st.markdown("### 🎲 Inteligência Artificial: Gerar Apostas Filtradas")
-    
