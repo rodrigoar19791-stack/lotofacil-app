@@ -104,8 +104,7 @@ def buscar_ultimo_sorteio_caixa():
                 return dezenas, str(concurso)
     except Exception:
         pass
-    dezenas_padrao = [2, 3, 4, 5, 9, 10, 11, 12, 15, 16, 17, 18, 21, 23, 25]
-    return dezenas_padrao, "3771"
+    return, "3771"
 
 # TELA DE LOGIN
 SENHA_CORRETA = "LOTO2026"
