@@ -125,7 +125,7 @@ if not st.session_state.autenticado:
             
     st.write("---")
     st.markdown("#### ⚡ Não tem uma senha?")
-    link_kiwify = "https://kiwify.com.br" 
+    link_kiwify = "https://pay.kiwify.com.br/DmTPIx8" 
     st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por Apenas R$ 9,90</a>', unsafe_allow_html=True)
     st.stop()
 
