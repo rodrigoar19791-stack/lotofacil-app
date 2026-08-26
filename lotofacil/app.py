@@ -149,23 +149,22 @@ if not st.session_state.autenticado:
     </div>
     """, unsafe_allow_html=True)
     
-    col_login_1, col_login_2 = st.columns(2)
-    with col_login_1:
-        st.markdown("#### 🔓 Já é um Membro Assinante?")
-        senha_digitada = st.text_input("Digite sua senha de acesso ativa:", type="password")
-        if st.button("Destravar Otimizador", type="primary"):
-            if senha_digitada == SENHA_CORRETA:
-                st.session_state.autenticado = True
-                st.success("Acesso autorizado!")
-                st.rerun()
-            else:
-                st.error("Senha incorreta.")
-                
-    with col_login_2:
-        st.markdown("#### ⚡ Não tem uma senha?")
-        st.write("Ative seu acesso via PIX na Kiwify para destravar o gerador inteligente:")
-        link_kiwify = "https://kiwify.com.br" 
-        st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por R$ 9,90</a>', unsafe_allow_html=True)
+    st.markdown("#### 🔓 Já é um Membro Assinante?")
+    senha_digitada = st.text_input("Digite sua senha de acesso ativa:", type="password")
+    
+    if st.button("Destravar Otimizador", type="primary"):
+        if senha_digitada == SENHA_CORRETA:
+            st.session_state.autenticado = True
+            st.success("Acesso autorizado!")
+            st.rerun()
+        else:
+            st.error("Senha incorreta.")
+            
+    st.write("---")
+    st.markdown("#### ⚡ Não tem uma senha?")
+    st.write("Ative seu acesso via PIX na Kiwify para destravar o gerador inteligente instantaneamente:")
+    link_kiwify = "https://kiwify.com.br" 
+    st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por Apenas R$ 9,90</a>', unsafe_allow_html=True)
     st.stop()
 
 # FUNÇÕES DO MOTOR DE PROCESSAMENTO
@@ -268,3 +267,5 @@ if len(ultimo_sorteio_set) == 15:
     with col_m1:
         st.markdown(f'<div class="metric-card"><h4>Pares vs Ímpares</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_impares}Í / {u_pares}P</p></div>', unsafe_allow_html=True)
     with col_m2:
+        st.markdown(f'<div class="metric-card"><h4>Números Primos</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_primos} dezenas</p></div>', unsafe_allow_html=True)
+    with col_m3:
