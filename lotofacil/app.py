@@ -104,7 +104,9 @@ def buscar_ultimo_sorteio_caixa():
                 return dezenas, str(concurso)
     except Exception:
         pass
-    return, "3771"
+    # Lista de contingência caso a API externa falhe temporariamente
+    dezenas_seguranca = [2, 3, 4, 5, 9, 10, 11, 12, 15, 16, 17, 18, 21, 23, 25]
+    return dezenas_seguranca, "3771"
 
 # TELA DE LOGIN
 SENHA_CORRETA = "LOTO2026"
@@ -255,12 +257,10 @@ if len(ultimo_sorteio_set) == 15:
     txt_quentes = " - ".join(f"{n:02d}" for n in dezenas_quentes)
     txt_frias = " - ".join(f"{n:02d}" for n in dezenas_frias)
     
-    st.markdown("🔻 **Dezenas Quentes (Alta Frequência Recente):**")
+    st.markdown("**Dezenas Quentes (Alta Frequência Recente):**")
     st.success(txt_quentes)
     
-    st.markdown("🔹 **Dezenas Frias (Atrasadas no Ciclo / Tendência de Volta):**")
+    st.markdown("**Dezenas Frias (Atrasadas no Ciclo / Tendência de Volta):**")
     st.info(txt_frias)
 
     st.write("---")
-    
-    # 📊 4. INDICADORES ESTATÍSTICOS CORRIGIDOS E NATIVOS
