@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Estilização profissional de cassino e painéis de dados (SaaS Premium)
+# Estilização profissional
 st.markdown("""
     <style>
     .metric-card {
@@ -49,7 +49,6 @@ st.markdown("""
         font-weight: bold;
         border-radius: 5px;
         margin-top: 15px;
-        box-shadow: 0px 4px 10px rgba(46, 125, 50, 0.3);
     }
     .volante-container {
         display: flex;
@@ -171,28 +170,22 @@ if not st.session_state.autenticado:
 # FUNÇÕES DO MOTOR DE PROCESSAMENTO
 def validar_jogo(combinacao, ultimo_sorteio, qtde_repetidos):
     jogo = set(combinacao)
-    
     if len(jogo.intersection(ultimo_sorteio)) != qtde_repetidos:
         return False
-        
     pares = len([n for n in jogo if n % 2 == 0])
     if pares != 7 and pares != 8:
         return False
-        
     primos = len(jogo.intersection(NUMEROS_PRIMOS))
     if primos != 5 and primos != 6:
         return False
-        
     moldura = len(jogo.intersection(MOLDURA))
     if moldura != 9 and moldura != 10:
         return False
-        
     return True
 
 def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
     todos_numeros = list(range(1, 26))
     jogos_gerados = []
-    
     qtde_9_repetidas = int(quantidade_total * 0.7)
     if qtde_9_repetidas < 1:
         qtde_9_repetidas = 1
@@ -221,10 +214,7 @@ st.subheader(f"Painel Avançado — Concurso Base da Caixa: Nº {num_concurso}")
 st.write("---")
 
 st.sidebar.header("🎛️ Configurações")
-resultado_input = st.sidebar.text_input(
-    "Dezenas do Último Concurso:",
-    value=valores_padrao
-)
+resultado_input = st.sidebar.text_input("Dezenas do Último Concurso:", value=valores_padrao)
 
 try:
     limpo = resultado_input.replace(",", " ").split()
@@ -237,7 +227,6 @@ quantidade_jogos = st.sidebar.slider("Quantidade de Jogos para Gerar:", min_valu
 
 if len(ultimo_sorteio_set) == 15:
     
-    # 📌 GERADOR NO TOPO DO PAINEL PARA VISIBILIDADE IMEDIATA
     st.markdown("### 🎲 Inteligência Artificial: Gerar Apostas Filtradas")
     
     if 'jogos_armazenados' not in st.session_state:
@@ -251,7 +240,6 @@ if len(ultimo_sorteio_set) == 15:
         jogos = st.session_state.jogos_armazenados
         st.success(f"Sucesso! {len(jogos)} jogos calibrados gerados.")
         
-        # Cria botões de exportação
         texto_txt = ""
         for idx, jogo_gerado in enumerate(jogos, 1):
             texto_txt += f"Jogo {idx:02d}: " + " - ".join(f"{n:02d}" for n in jogo_gerado) + "\n"
@@ -261,14 +249,10 @@ if len(ultimo_sorteio_set) == 15:
         df_jogos.index = [f"Jogo {i:02d}" for i in range(1, len(jogos) + 1)]
         dados_csv = df_jogos.to_csv().encode('utf-8')
         
-        btn_col1, btn_col2 = st.columns(2)
-        with btn_col1:
-            st.download_button(label="📄 Baixar em Texto (.txt)", data=texto_txt, file_name="jogos_lotofacil.txt", mime="text/plain", use_container_width=True)
-        with btn_col2:
-            st.download_button(label="📊 Baixar em Planilha (.csv)", data=dados_csv, file_name="jogos_lotofacil.csv", mime="text/csv", use_container_width=True)
+        st.download_button(label="📄 Baixar em Texto (.txt)", data=texto_txt, file_name="jogos_lotofacil.txt", mime="text/plain", use_container_width=True)
+        st.download_button(label="📊 Baixar em Planilha (.csv)", data=dados_csv, file_name="jogos_lotofacil.csv", mime="text/csv", use_container_width=True)
             
         st.write("---")
-        # Mostra as dezenas geradas na tela
         for idx, jogo_gerado in enumerate(jogos, 1):
             jogo_formatado = " - ".join(f"{n:02d}" for n in jogo_gerado)
             st.markdown(f'**Bilhete {idx:02d}:**')
@@ -276,7 +260,14 @@ if len(ultimo_sorteio_set) == 15:
             
     st.write("---")
 
-    # OUTROS ELEMENTOS DO PAINEL (LADO A LADO)
-    col_vis1, col_vis2 = st.columns(2)
-    
-    with col_vis1:
+    st.markdown("### 🗺️ Mapeamento Geográfico do Concurso")
+    html_volante = '<div class="volante-container">'
+    for i in range(1, 26):
+        classe_bola = "bola-ativada" if i in ultimo_sorteio_set else "bola-desativada"
+        html_volante += f'<div class="{classe_bola}">{i:02d}</div>'
+    html_volante += '</div>'
+    st.markdown(html_volante, unsafe_allow_html=True)
+
+    st.write("---")
+    st.markdown("### 🔥 Tendências Clínicas e Ciclos")
+    dezenas_frias = {1, 10, 11, 14, 16, 17, 19, 20, 23, 24}.difference(ultimo_sorteio_set)
