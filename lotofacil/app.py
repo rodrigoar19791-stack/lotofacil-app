@@ -54,13 +54,13 @@ st.markdown("""
     .volante-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
         max-width: 320px;
-        margin: 20px 0;
+        margin: 10px 0;
     }
     .bola-desativada {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
         background-color: #ffffff;
         border: 2px solid #bdbdbd;
         color: #757575;
@@ -69,11 +69,11 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 18px;
+        font-size: 16px;
     }
     .bola-ativada {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
         background-color: #1976d2;
         border: 2px solid #0d47a1;
         color: white;
@@ -82,8 +82,8 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 18px;
-        box-shadow: 0px 0px 8px #1976d2;
+        font-size: 16px;
+        box-shadow: 0px 0px 6px #1976d2;
     }
     .badge-quente {
         background-color: #ffebee;
@@ -168,7 +168,7 @@ if not st.session_state.autenticado:
     st.markdown(f'<a href="{link_kiwify}" target="_blank" class="btn-compra">Ativar Acesso por Apenas R$ 9,90</a>', unsafe_allow_html=True)
     st.stop()
 
-# FUNÇÕES DO MOTOR DE PROCESSAMENTO (CORRIGIDAS DEFINITIVAMENTE)
+# FUNÇÕES DO MOTOR DE PROCESSAMENTO
 def validar_jogo(combinacao, ultimo_sorteio, qtde_repetidos):
     jogo = set(combinacao)
     
@@ -193,7 +193,6 @@ def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
     todos_numeros = list(range(1, 26))
     jogos_gerados = []
     
-    # Distribuição Proporcional Inteligente (70% com 9 repetidas / 30% com 8 repetidas)
     qtde_9_repetidas = int(quantidade_total * 0.7)
     if qtde_9_repetidas < 1:
         qtde_9_repetidas = 1
@@ -213,7 +212,7 @@ def gerar_jogos_estrategicos(quantidade_total, ultimo_sorteio):
             
     return jogos_gerados
 
-# DISPARA A BUSCA AUTOMÁTICA NA ABERTURA
+# DISPARA A BUSCA AUTOMÁTICA
 valores_padrao, num_concurso = buscar_ultimo_sorteio_caixa()
 
 # INTERFACE INTERNA DO SISTEMA
@@ -238,38 +237,46 @@ quantidade_jogos = st.sidebar.slider("Quantidade de Jogos para Gerar:", min_valu
 
 if len(ultimo_sorteio_set) == 15:
     
-    st.markdown("### 🗺️ Mapeamento Geográfico do Último Concurso")
-    html_volante = '<div class="volante-container">'
-    for i in range(1, 26):
-        classe_bola = "bola-ativada" if i in ultimo_sorteio_set else "bola-desativada"
-        html_volante += f'<div class="{classe_bola}">{i:02d}</div>'
-    html_volante += '</div>'
-    st.markdown(html_volante, unsafe_allow_html=True)
+    # 📌 GERADOR NO TOPO DO PAINEL PARA VISIBILIDADE IMEDIATA
+    st.markdown("### 🎲 Inteligência Artificial: Gerar Apostas Filtradas")
+    
+    if 'jogos_armazenados' not in st.session_state:
+        st.session_state.jogos_armazenados = None
 
+    if st.button("⚡ Gerar Combinações Otimizadas", type="primary"):
+        with st.spinner("Varrendo combinações matemáticas..."):
+            st.session_state.jogos_armazenados = gerar_jogos_estrategicos(quantidade_total=quantidade_jogos, ultimo_sorteio=ultimo_sorteio_set)
+            
+    if st.session_state.jogos_armazenados:
+        jogos = st.session_state.jogos_armazenados
+        st.success(f"Sucesso! {len(jogos)} jogos calibrados gerados.")
+        
+        # Cria botões de exportação
+        texto_txt = ""
+        for idx, jogo_gerado in enumerate(jogos, 1):
+            texto_txt += f"Jogo {idx:02d}: " + " - ".join(f"{n:02d}" for n in jogo_gerado) + "\n"
+            
+        colunas_csv = [f"Dezena_{i}" for i in range(1, 16)]
+        df_jogos = pd.DataFrame(jogos, columns=colunas_csv)
+        df_jogos.index = [f"Jogo {i:02d}" for i in range(1, len(jogos) + 1)]
+        dados_csv = df_jogos.to_csv().encode('utf-8')
+        
+        btn_col1, btn_col2 = st.columns(2)
+        with btn_col1:
+            st.download_button(label="📄 Baixar em Texto (.txt)", data=texto_txt, file_name="jogos_lotofacil.txt", mime="text/plain", use_container_width=True)
+        with btn_col2:
+            st.download_button(label="📊 Baixar em Planilha (.csv)", data=dados_csv, file_name="jogos_lotofacil.csv", mime="text/csv", use_container_width=True)
+            
+        st.write("---")
+        # Mostra as dezenas geradas na tela
+        for idx, jogo_gerado in enumerate(jogos, 1):
+            jogo_formatado = " - ".join(f"{n:02d}" for n in jogo_gerado)
+            st.markdown(f'**Bilhete {idx:02d}:**')
+            st.markdown(f'<div class="game-box">{jogo_formatado}</div>', unsafe_allow_html=True)
+            
     st.write("---")
-    st.markdown("### 🔥 Tendências Clínicas e Ciclos")
-    dezenas_frias = {1, 10, 11, 14, 16, 17, 19, 20, 23, 24}.difference(ultimo_sorteio_set)
-    dezenas_quentes = ultimo_sorteio_set.intersection({2, 3, 5, 13, 25, 9, 15})
-    
-    st.write("**Dezenas Quentes (Alta Frequência Recente):**")
-    html_quentes = ""
-    for n in sorted(dezenas_quentes):
-        html_quentes += f'<span class="badge-quente">{n:02d}</span> '
-    st.markdown(html_quentes if html_quentes != "" else "_Nenhuma_", unsafe_allow_html=True)
-    
-    st.write("---")
-    st.write("**Dezenas Frias (Atrasadas no Ciclo):**")
-    html_frias = ""
-    for n in sorted(dezenas_frias):
-        html_frias += f'<span class="badge-frio">{n:02d}</span> '
-    st.markdown(html_frias if html_frias != "" else "_Nenhuma_", unsafe_allow_html=True)
 
-    st.write("---")
-    st.markdown("### 📊 Indicadores Estatísticos do Concurso Base")
-    u_pares = len([n for n in ultimo_sorteio_set if n % 2 == 0])
-    u_impares = 15 - u_pares
-    u_primos = len(ultimo_sorteio_set.intersection(NUMEROS_PRIMOS))
-    u_moldura = len(ultimo_sorteio_set.intersection(MOLDURA))
+    # OUTROS ELEMENTOS DO PAINEL (LADO A LADO)
+    col_vis1, col_vis2 = st.columns(2)
     
-    st.markdown(f'<div class="metric-card"><h4>Pares vs Ímpares</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_impares}Í / {u_pares}P</p></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="metric-card"><h4>Números Primos</h4><p style="font-size: 24px; font-weight: bold; color: #2e7d32;">{u_primos} dezenas</p></div>', unsafe_allow_html=True)
+    with col_vis1:
