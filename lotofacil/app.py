@@ -104,7 +104,6 @@ def buscar_ultimo_sorteio_caixa():
                 return dezenas, str(concurso)
     except Exception:
         pass
-    # Dezenas padrão de segurança do último sorteio oficial corrigido
     dezenas_padrao = [2, 3, 4, 5, 9, 10, 11, 12, 15, 16, 17, 18, 21, 23, 25]
     return dezenas_padrao, "3771"
 
@@ -263,3 +262,5 @@ if len(ultimo_sorteio_set) == 15:
     u_pares = len([n for n in ultimo_sorteio_set if n % 2 == 0])
     u_impares = 15 - u_pares
     u_primos = len(ultimo_sorteio_set.intersection(NUMEROS_PRIMOS))
+    u_moldura = len(ultimo_sorteio_set.intersection(MOLDURA))
+    
