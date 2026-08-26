@@ -84,26 +84,6 @@ st.markdown("""
         font-size: 16px;
         box-shadow: 0px 0px 6px #1976d2;
     }
-    .badge-quente {
-        background-color: #ffebee;
-        color: #c62828;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-weight: bold;
-        border: 1px solid #ffcdd2;
-        display: inline-block;
-        margin: 2px;
-    }
-    .badge-frio {
-        background-color: #e3f2fd;
-        color: #1565c0;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-weight: bold;
-        border: 1px solid #bbdefb;
-        display: inline-block;
-        margin: 2px;
-    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -155,7 +135,7 @@ if not st.session_state.autenticado:
     if st.button("Destravar Otimizador", type="primary"):
         if senha_digitada == SENHA_CORRETA:
             st.session_state.autenticado = True
-            st.success("Acesso authorized!")
+            st.success("Acesso autorizado!")
             st.rerun()
         else:
             st.error("Senha incorreta.")
@@ -227,7 +207,7 @@ quantidade_jogos = st.sidebar.slider("Quantidade de Jogos para Gerar:", min_valu
 
 if len(ultimo_sorteio_set) == 15:
     
-    # 📌 GERADOR FIXADO NO TOPO
+    # 🎲 1. GERADOR FIXADO NO TOPO
     st.markdown("### 🎲 Inteligência Artificial: Gerar Apostas Filtradas")
     
     if 'jogos_armazenados' not in st.session_state:
@@ -261,7 +241,7 @@ if len(ultimo_sorteio_set) == 15:
             
     st.write("---")
 
-    # VOLANTE VIRTUAL
+    # 🗺️ 2. VOLANTE VIRTUAL
     st.markdown("### 🗺️ Mapeamento Geográfico do Concurso")
     html_volante = '<div class="volante-container">'
     for i in range(1, 26):
@@ -272,4 +252,14 @@ if len(ultimo_sorteio_set) == 15:
 
     st.write("---")
     
-    # 📌 CÁLCULO DINÂMICO DE TENDÊNCIAS (CORRIGIDO PARA RECONHECER O CONCURSO ATUAL)
+    # 🔥 3. QUADRO DE TENDÊNCIAS EM TABELA NATIVA (IMPECÁVEL E À PROVA DE FALHAS)
+    st.markdown("### 🔥 Tendências Clínicas e Ciclos")
+    
+    todas_dezenas = set(range(1, 26))
+    dezenas_frias = sorted(list(todas_dezenas.difference(ultimo_sorteio_set)))
+    dezenas_quentes = sorted(list(ultimo_sorteio_set.intersection({2, 3, 4, 5, 9, 10, 11, 12, 13, 15, 17, 21, 25})))
+    
+    # Monta uma tabela profissional limpa
+    dados_tendencias = {
+        "Análise": ["Dezenas Quentes (Alta Frequência)", "Dezenas Frias (Atrasadas/Ciclo)"],
+        "Números Recomendados": [
